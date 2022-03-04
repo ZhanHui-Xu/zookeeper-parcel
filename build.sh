@@ -15,10 +15,10 @@ CDH_MAX=`sed '/^CDH_MAX=/!d;s/.*=//' zookeeper-parcel.properties`
 zookeeper_service_name="ZOOKEEPER"
 zookeeper_service_name_lower="$( echo $zookeeper_service_name | tr '[:upper:]' '[:lower:]' )"
 zookeeper_archive="$( basename $ZOOKEEPER_URL )"
-zookeeper_unzip_folder="${zookeeper_service_name_lower}-${ZOOKEEPER_VERSION}"
-zookeeper_folder_lower="$( basename $zookeeper_archive .tgz )"
-zookeeper_parcel_folder="$( echo $zookeeper_folder_lower | tr '[:lower:]' '[:upper:]')"
-zookeeper_parcel_name="$zookeeper_parcel_folder-el${OS_VERSION}.parcel"
+zookeeper_unzip_folder="apache-${zookeeper_service_name_lower}-${ZOOKEEPER_VERSION}-bin"
+zookeeper_folder_lower="$( basename $zookeeper_archive .tar.gz )"
+zookeeper_parcel_folder="$zookeeper_service_name-$ZOOKEEPER_VERSION.$EXTENS_VERSION"
+zookeeper_parcel_name="$zookeeper_service_name-$ZOOKEEPER_VERSION.$EXTENS_VERSION-el${OS_VERSION}.parcel"
 zookeeper_built_folder="${zookeeper_parcel_folder}_build"
 zookeeper_csd_build_folder="zookeeper_csd_build"
 
@@ -60,7 +60,6 @@ function build_zookeeper_parcel {
     mv ${zookeeper_unzip_folder}  ${zookeeper_parcel_folder}/lib/${zookeeper_service_name_lower}
   fi
   cp -r parcel/meta $zookeeper_parcel_folder/
-  chmod 755 parcel/zookeeper*
 
   sed -i -e "s/%zookeeper_version%/$zookeeper_parcel_folder/" ./$zookeeper_parcel_folder/meta/zookeeper_env.sh
   sed -i -e "s/%VERSION%/$ZOOKEEPER_VERSION/" ./$zookeeper_parcel_folder/meta/parcel.json
