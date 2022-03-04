@@ -25,7 +25,7 @@
       "type": "string",
       "default": ""
     }
-    ```TODO```
+    ```TODO````ZooKeeper (Service-Wide)  28 items````````
   ]  
   "roles": [
     {
@@ -41,7 +41,7 @@
            "type": "string",
            "default": ""
          }
-         ```TODO````
+         ```TODO````Server  69 items````````
       ],
       "startRunner": {
         "program": "scripts/control.sh",
