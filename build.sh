@@ -36,7 +36,7 @@ function build_cm_ext {  #Checkout if dir does not exist
 
 function get_zookeeper {
   if [ ! -f "$zookeeper_archive" ]; then
-    wget $ZOOKEEPER_URL
+    wget $ZOOKEEPER_URL --no-check-certificate
   fi
   #zookeeper_md5="$( md5sum $zookeeper_archive | cut -d' ' -f1 )"
   #if [ "$zookeeper_md5" != "$ZOOKEEPER_MD5" ]; then
