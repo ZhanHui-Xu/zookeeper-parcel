@@ -1,0 +1,47 @@
+{
+	"schema_version": 1,
+	"name": "%SERVICENAME%",
+	"version": "%VERSION%.%EXTENS_VERSION%",
+	"depends": "CDH (>= %CDH_MIN_FULL%), CDH (<< %CDH_MAX_FULL%)",
+	"setActiveSymlink": true,
+	"replaces": "ZOOKEEPER",
+	"scripts": {
+        	"defines": "zookeeper_env.sh"
+			},
+	"packages": [
+        {
+            "name": "zookeeper",
+            "version": "%VERSION%+%EXTENS_VERSION%"
+        },
+        {
+            "name": "zookeeper-server",
+            "version": "%VERSION%+%EXTENS_VERSION%"
+        },
+        {
+            "name": "zookeeper-native",
+            "version": "%VERSION%+c%EXTENS_VERSION%"
+        },
+        {
+            "name": "zookeeper-debuginfo",
+            "version": "%VERSION%+c%EXTENS_VERSION%"
+        }
+	],
+	"components": [
+		{
+		    "name": "zookeeper",
+		    "version": "%VERSION%-%EXTENS_VERSION%",
+		    "pkg_version": "%VERSION%+%EXTENS_VERSION%",
+         	    "pkg_release": "%EXTENS_VERSION%"
+		}
+	],
+	"provides": ["%SERVICENAMELOWER%"],
+	"users": {
+            "zookeeper": {
+	        "longname": "ZooKeeper",
+	        "home": "/var/lib/zookeeper",
+	        "shell": "/bin/bash",
+	        "extra_groups": []
+	    }
+	},
+	"groups": ["zookeeper"]
+}

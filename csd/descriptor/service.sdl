@@ -1,0 +1,101 @@
+{
+  "name" : "ZOOKEEPER",
+  "label" : "ZooKeeper_3.5.9",
+  "description" : "Apache ZooKeeper is a centralized service for maintaining and synchronizing configuration data.",
+  "version" : "1.0",
+  "runAs" : { 
+    "user" : "zookeeper",
+    "group" : "zookeeper"
+   },
+  "icon": "images/zookeeper.png",
+  "parcel": {
+    "repoUrl": "https://localhost/kafka/parcels/latest/",
+    "requiredTags": [
+      "cdh",
+      "zookeeper"
+    ]
+  },
+  "parameters": [
+    {
+      "name": "temp",
+      "label": "temp",
+      "description": "temp",
+      "configName": "druid.port",
+      "required": "true",
+      "type": "string",
+      "default": ""
+    }
+    ```TODO```
+  ]  
+  "roles": [
+    {
+      "name" : "ZOOKEEPER_SERVER",
+      "label" : "Server",
+      "pluralLabel" : "ZooKeeper Servers",
+      "parameters" : [
+         {
+           "name": "clientPort",
+           "label": "temp",
+           "description": "temp",
+           "required": "true",
+           "type": "string",
+           "default": ""
+         }
+         ```TODO````
+      ],
+      "startRunner": {
+        "program": "scripts/control.sh",
+        "args": ["start"],
+        "environmentVariables": {
+        }
+      },
+      "stopRunner": {
+        "runner": {
+          "program": "scripts/control.sh",
+          "args": ["stop"],
+          "environmentVariables": {
+          }
+        }
+      },
+      "topology": {
+        "minInstances": 1
+      },    
+      "logging": {
+        "dir": "/var/log/zookeeper",
+        "filename": "zookeeper-cmf-zookeeper-SERVER-${host}.log",
+        "configName": "log.dir",
+        "modifiable": true,
+        "loggingType": "log4j"
+      }
+      "configWriter": {
+        "generators":[
+          {
+            "filename":"zoo.cfg",
+            "configFormat":"properties",
+            "includeParams":[
+              tickTime,
+              initLimit,
+              syncLimit,
+              dataDir,
+              dataLogDir,
+              clientPort,
+              ```TODO```` 
+            ],
+            "additionalConfigs" : [
+              {
+                "key" : "request.timeout.ms",
+                "value" : "${producer.request.timeout.ms}"
+              },
+              ```TODO`````
+            ]            
+          },
+          {
+          
+          }
+        ]
+      }
+
+
+    }
+  ]
+}
