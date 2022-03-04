@@ -17,15 +17,95 @@
   },
   "parameters": [
     {
-      "name": "temp",
-      "label": "temp",
-      "description": "temp",
-      "configName": "druid.port",
+      "name": "tickTime",
+      "label": "Tick Time",
+      "description": "The length of time, in milliseconds, of a single tick, which is the basic time unit used by ZooKeeper. A tick is used to regulate heartbeats and timeouts.",
       "required": "true",
-      "type": "string",
-      "default": ""
+      "type": "long",
+      "default": 2000
+    },
+    {
+      "name": "syncLimit",
+      "label": "SynchrAmount of time, in ticks, to allow followers to sync with ZooKeeper. If followers fall too far behind a leader, they are dropped.",
+      "required": "true",
+      "type": "long",
+      "default": 5
+    },
+    {
+      "name": "initLimit",
+      "label": "Initialization Limit",
+      "description": "Amount of time, in ticks, to allow followers to connect and sync to a leader. Increase this value as needed, if the amount of data managed by ZooKeeper is large.",
+      "required": "true",
+      "type": "long",
+      "default": 10
+    },
+    {
+      "label": "Cleanup Retain Count",
+      "description": "The number of snapshot files and corresponding transaction logs to keep when running the Cleanup command.",
+      "required": "true",
+      "type": "long",
+      "default": 5
+    },
+    {
+      "name": "jute.maxbuffer",
+      "label": "Jute Max Buffer",
+      "description": "The maximum size of the data that can be stored in a znode in bytes.",
+      "configName": "druid.processing.buffer.sizeBytes",
+      "type": "memory",
+      "default": 4194304,
+      "unit": "bytes"
+    },
+    {
+      "name": "leaderServes",
+      "label": "Leader Serves",
+      "description": "Whether the leader accepts client connections.",
+      "required": "true",
+      "type": "string_enum",
+      "validValues" : [ "yes", "no" ],
+      "default": "yes"
+    },
+    {
+      "name": "quorum.cnxn.threads.size",
+      "label": "Quorum Connection Manager Thread Pool Size",
+      "description": "Size of the thread pool quorum connection manager uses to manage connections between quorum servers. Only applies when ZooKeeper Server to Server SASL Authentication is enabled.",
+      "required": "true",
+      "type": "long",
+      "default": 20
+    },
+    {
+      "name": "autopurge.purgeInterval",
+      "label": "Auto Purge Time Interval",
+      "description": "The time interval in hours for which the purge task has to be triggered. Set to a positive integer (1 and above) to enable the auto purging. Defaults to 24.",
+      "type": "long",
+      "default": 24,
+      "min": 1,
+      "unit": "hours"
+    },
+    {
+      "name": "autopurge.snapRetainCount",
+      "label": "Auto Purge Snapshots Retain Count",
+      "description": "When enabled, ZooKeeper auto purge feature retains this many most recent snapshots and the corresponding transaction logs in the dataDir and dataLogDir respectively and deletes the rest. Defaults to 5. Minimum value is 3.",
+      "required": "true",
+      "type": "long",
+      "default": 5,
+      "min": 3
+    },
+    {
+      "name" : "enableSecurity",
+      "label" : "Enable Kerberos Authentication",
+      "description" : "Enable Kerberos authentication for ZooKeeper.",
+      "type" : "boolean",
+      "default" : "false",
+      "configurableInWizard": true
+    },
+    {
+      "name" : "quorum.auth.enableSasl",
+      "label" : "Enable Server to Server SASL Authentication",
+      "description" : "Enables SASL authentication between ZooKeeper servers. Only applies when ZooKeeper Kerberos Authentication is enabled.",
+      "type" : "boolean",
+      "default" : "false",
+      "configurableInWizard": true
     }
-    ```TODO````ZooKeeper (Service-Wide)  28 items````````
   ]  
   "roles": [
     {
@@ -34,14 +114,91 @@
       "pluralLabel" : "ZooKeeper Servers",
       "parameters" : [
          {
-           "name": "clientPort",
-           "label": "temp",
-           "description": "temp",
+           "name": "myid",
+           "label": "ZooKeeper Server ID",
+           "description": "Unique identifier for each ZooKeeper server, typically starts at 1",
+           "type": "string"
+         },
+         {
+           "name": "dataDir",
+           "label": "Data Directory",
+           "description": "The disk location that ZooKeeper will use to store its database snapshots.",
+           "default": "/var/lib/zookeeper",
+           "type": "path",
+           "required": "true",
+           "pathType": "localDataDir",
+           "configurableInWizard": true
+         },
+         {
+           "name": "dataLogDir",
+           "label": "Transaction Log Directory,
+           "description": "The disk location that ZooKeeper will use to store its transaction logs.",
+           "default": "/var/lib/zookeeper",
+           "type": "path",
+           "required": "true",
+           "pathType": "localDataDir",
+           "configurableInWizard": true
+         },
+         {
+           "name": "clientPortAddress",
+           "label": "Client Port Address",
+           "description": "
+The address (IPv4, IPv6, or hostname) to monitor for client connections. This is the address that clients attempt to connect to. This setting is optional, because by default, ZooKeeper binds in such a way that any connection to the client port for any address/interface/NIC on the server will be accepted.",
            "required": "true",
            "type": "string",
            "default": ""
-         }
-         ```TODO````Server  69 items````````
+         },
+         {
+           "name": "maxClientCnxns",
+           "label": "Maximum Client Connections",
+           "description": "The maximum number of concurrent connections (at the socket level) that a single client, identified by the IP address, may make to a single member of the ZooKeeper ensemble. This setting is used to prevent certain classes of DoS attacks, including file descriptor exhaustion. To remove the limit on concurrent connections, set this value to 0.",
+           "required": "true",
+           "type": "long",
+           "default": 200
+         },
+         {
+           "name": "minSessionTimeout",
+           "label": "Minimum Session Timeout",
+           "description": "The minimum session timeout, in milliseconds, that the ZooKeeper Server will allow the client to negotiate",
+           "required": "true",
+           "type": "long",
+           "default": 4000
+         },
+         {
+           "name": "maxSessionTimeout",
+           "label": "Maximum Session Timeout",
+           "description": "The maximum session timeout, in milliseconds, that the ZooKeeper Server will allow the client to negotiate",
+           "required": "true",
+           "type": "long",
+           "default": 60000
+         },
+         {
+           "name": "oom_heap_dump_dir",
+           "label": "Heap Dump Directory",
+           "description": "Path to directory where heap dumps are generated when java.lang.OutOfMemoryError error is thrown. This directory is automatically created if it does not exist. If this directory already exists, role user must have write access to this directory. If this directory is shared among multiple roles, it should have 1777 permissions. The heap dump files are created with 600 permissions and are owned by the role user. The amount of free space in this directory should be greater than the maximum Java Process heap size configured for this role.",
+           "default": "/tmp",
+           "type": "path",
+           "required": "true",
+           "pathType": "localDataDir",
+           "configurableInWizard": true
+         },
+         {
+           "name": "clientPort",
+           "label": "Client Port",
+           "description": "The port to monitor for client connections. This is the port that clients attempt to connect to.",
+           "required": "true",
+           "type": "port",
+           "default": 2181
+         },
+         {
+           "name": "cpu.shares",
+           "label": "Cgroup CPU Shares",
+           "description": "Number of CPU shares to assign to this role. The greater the number of shares, the larger the share of the host's CPUs that will be given to this role when the host experiences CPU contention. Must be between 2 and 262144. Defaults to 1024 for processes not managed by Cloudera Manager.",
+           "required": "true",
+           "type": "long",
+           "default": 1024
+         },
+         ```````TODO  Server````````````
       ],
       "startRunner": {
         "program": "scripts/control.sh",
@@ -73,21 +230,21 @@
             "filename":"zoo.cfg",
             "configFormat":"properties",
             "includeParams":[
-              tickTime,
-              initLimit,
-              syncLimit,
-              dataDir,
-              dataLogDir,
-              clientPort,
-              ```TODO```` 
-            ],
-            "additionalConfigs" : [
-              {
-                "key" : "request.timeout.ms",
-                "value" : "${producer.request.timeout.ms}"
-              },
-              ```TODO`````
-            ]            
+              "tickTime",
+              "initLimit",
+              "syncLimit",
+              "dataDir",
+              "dataLogDir",
+              "clientPort",
+              "minSessionTimeout",
+              "maxSessionTimeout",
+              "autopurge.purgeInterval",
+              "autopurge.snapRetainCount",
+              "quorum.auth.enableSasl",
+              "quorum.cnxn.threads.size"
+              "myid",
+              "leaderServes"
+            ]           
           },
           {
           
